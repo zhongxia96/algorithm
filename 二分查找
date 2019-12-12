@@ -1,0 +1,52 @@
+二分查找旨在对一个排序之后的数据进行高效查找，时间复杂度在logN;
+需要注意的点在，一定要提前排序；并且注意二分之后的起始值
+
+#include <iostream>
+#include <algorithm>
+#include <string>
+using namespace std;
+struct stu{
+string number;
+string name;
+string sex;
+int age;
+bool operator < (const stu &b) const{
+return number < b.number;
+}
+}student[1005];
+
+
+int main()
+{
+    int n;
+    cin >> n;
+    for(int i=0;i<n;i++)
+        cin>>student[i].number>>student[i].name>>student[i].sex>>student[i].age;
+    sort(student, student+n);
+    int m;
+    cin>>m;
+    while(m--){
+        string query;
+        cin>>query;
+        int base=0, top=n-1;
+        int ans = -1;
+        while(base<=top){
+            int mid = (base+top) / 2;
+            if(query == student[mid].number){
+                ans = mid;
+                break;
+            }
+            else{
+                if(query > student[mid].number)
+                    base = mid+1;
+                else
+                    top = mid-1;
+            }
+        }
+        if(ans==-1)
+            cout<<"No Answer"<<endl;
+        else
+            cout<<student[ans].number<<" "<<student[ans].name<<" "<<student[ans].sex<<" "<<student[ans].age<<endl;
+    }
+    return 0;
+}
