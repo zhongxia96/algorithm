@@ -1,0 +1,29 @@
+#include <iostream>
+#include<algorithm>
+
+using namespace std;
+
+bool cmp(int a, int b){
+return a > b;
+}
+
+int main()
+{
+    int n;
+    int a[100];
+    while(cin>>n){
+        for(int i =0;i<n;i++)
+            cin>>a[i];
+
+        sort(a, a+n, cmp);
+        for(int i=0;i<n;i++)
+        {
+            cout<<a[i]<<" ";
+        }
+        cout<<endl;
+    }
+    return 0;
+}
+
+引入algorithm库，使用其中的sort函数，原来的规则的是按照升序对数字进行排序；可以使用自定义的函数定义排序规则，并作为第三个参数传入sort函数；
+自定义函数接收两个输入，返回一个bool值
