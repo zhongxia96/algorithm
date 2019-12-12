@@ -27,3 +27,42 @@ int main()
 
 引入algorithm库，使用其中的sort函数，原来的规则的是按照升序对数字进行排序；可以使用自定义的函数定义排序规则，并作为第三个参数传入sort函数；
 自定义函数接收两个输入，返回一个bool值
+
+
+ 
+定义结构体进行排序：
+
+#include <iostream>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+
+struct stu{
+string name;
+int age;
+int score;
+
+bool operator < (const stu &b) const{
+ if(score != b.score)
+    return score < b.score;
+ return name < b.name;
+}
+
+};
+
+
+
+int main()
+{
+    stu student[1005];
+    int n;
+    cin >> n;
+    for(int i=0;i<n;i++){
+        cin>>student[i].name>>student[i].age>>student[i].score;
+    }
+    sort(student, student+n);
+    for(int i=0;i<n;i++)
+        cout<<student[i].name<<" "<<student[i].age<<" "<<student[i].score<<endl;
+    return 0;
+}
