@@ -1,0 +1,92 @@
+二叉排序树是一棵特殊的二叉搜索树，他是一棵二叉树且满足如下条件：对于树上的任意一个节点，其上的数值必大于等于其左子树上任意节点数值，必小于等于
+其右子树上任意节点的数值。
+
+二叉排序树的插入方式，对二叉排序树插入数字x:
+(1)若当前树为空，则x为其根节点
+(2)若当前节点大于x,则x插入其左子树；若当前节点小于x,则x插入其右子树;若当前节点等于x,则根据具体情况选择插入左右子树或者直接忽略。
+
+由于各个数字插入的顺序不同，所得到的二叉排序树的形态也可能不同，所以不同的插入顺序对二叉排序树的形态有重要影响。
+
+对二叉排序树进行中序遍历，那么其遍历结果必然是一个递增数序。
+
+下面是一个基于输入序列建立二叉排序树，并对其进行前序、中序和后序遍历的代码：
+
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+struct Node{
+    Node *left;
+    Node *right;
+    int value;
+}buff[105];
+
+int loc = 0;
+
+Node* create(){
+    buff[loc].left=buff[loc].right=NULL;
+    return &buff[loc++];
+}
+
+Node *Insert(int value, Node* root){
+    if(root==NULL){
+        root = create();
+        root->value = value;
+    }
+    else if(value<root->value)
+        root->left = Insert(value, root->left);
+    else if(value>root->value)
+        root->right = Insert(value, root->right);
+    return root;
+}
+
+Node *preOrder(Node *root, string &str){
+    str = str + to_string(root->value);
+    if(root->left!=NULL)
+        preOrder(root->left, str);
+    if(root->right!=NULL)
+        preOrder(root->right, str);
+}
+
+Node *postOrder(Node *root, string &str){
+    if(root->left!=NULL)
+        postOrder(root->left, str);
+    if(root->right!=NULL)
+        postOrder(root->right, str);
+    str = str + to_string(root->value);
+}
+
+Node *inOrder(Node *root, string &str){
+    if(root->left!=NULL)
+        inOrder(root->left, str);
+    str = str + to_string(root->value);
+    if(root->right!=NULL)
+        inOrder(root->right, str);
+}
+
+int main(){
+    int n;
+    int v;
+    cin>>n;
+    Node *root = NULL;
+    for(int i=0;i<n;i++){
+        cin>>v;
+        root = Insert(v, root);
+    }
+    string str = "";
+    preOrder(root, str);
+    cout<<str<<endl;
+    str = "";
+    inOrder(root, str);
+    cout<<str<<endl;
+    str = "";
+    postOrder(root, str);
+    cout<<str<<endl;
+    return 0;
+}
+```
