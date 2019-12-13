@@ -1,0 +1,44 @@
+今年暑假不AC
+题目的大致意思是有N个节目，每个节目都有一个开始时间和结束时间，需要计算出一个人一天最多观看完整的几个节目;
+这道题的关键也是找到贪心的策略：按照每个节目的终止时间进行排序，优先选择终止时间最早的节目进行观看可以得到最优解
+
+```
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include<stdio.h>
+using namespace std;
+
+struct program{
+int start;
+int endding;
+bool operator < (const program &b) const{
+    return endding < b.endding;
+}
+}buff[105];
+
+int main(){
+int n;
+while(cin>>n){
+    if(n==0)
+        break;
+    for(int i=0;i<n;i++){
+        cin>>buff[i].start>>buff[i].endding;
+    }
+    sort(buff, buff+n);
+    int current_time = 0;
+    int ans = 0;
+    for(int i=0;i<n;i++){
+        if(current_time<=buff[i].start){
+            current_time = buff[i].endding;
+            ans += 1;
+        }
+    }
+    cout<<ans<<endl;
+
+}
+
+return 0;
+
+}
+```
