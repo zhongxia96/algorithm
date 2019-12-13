@@ -1,0 +1,38 @@
+进制转换采用的和数位拆解类似的方法，下面给出一个将两个数a,b的和转换成m的进制的例子：输入格式为 m,a,b
+
+需要注意的是，在这个例子中，两个数的和可能会超过int，所以采用long long的数据类型。
+
+
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+
+int main()
+{
+    long long m, a, b;
+    int num[35];
+    while(cin>>m){
+        if(m==0)
+            break;
+        int a, b;
+        cin>>a>>b;
+        long long c = a+b;
+        int loc = 0;
+        while(c!=0){
+            num[loc++]=c%m;
+            c = c/m;
+        }
+        for(int i=loc-1;i>=0;i--)
+            cout<<num[i];
+        cout<<endl;
+    }
+
+    return 0;
+}
+```
