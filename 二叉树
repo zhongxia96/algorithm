@@ -1,0 +1,72 @@
+二叉树的问题主要涉及到存储、建立和遍历问题；
+给定前序遍历和中序遍历（或者中序遍历和后序遍历）可以唯一确定一棵二叉树；
+
+（1）二叉树的存储使用一个表示其左右子树的指针以及存储其内容的字符变量的结构体即可（保证可以递归的还原原始的二叉树）；
+（2）二叉树的遍历包括前序遍历，中序遍历和后序遍历，都可以通过递归程序使用上述的存储结构非常简单的写出；
+（3）二叉树的建立主要就是需要给定上述所说的至少两个遍历序列进行重建，基于前序/后序遍历的遍历序列，可以找到根节点，然后基于中序的遍历序列可以确定左右
+子树，然后再对其左右子树进行递归的建立，将左右子树的指针指向返回的根节点；
+
+下面给出一个根据前序遍历和中序遍历的结果，重建二叉树，并且输出其后续遍历结果的代码：
+（需要注意的是，一定要注意重建左右子树的边界变量，当时重建右子树的前序遍历的起点和终点就写错了）
+
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+struct Node{
+Node *left;
+Node *right;
+char c;
+}Tree[50];
+
+int loc;
+string str1, str2;
+
+ Node* creat(){
+    Tree[loc].left=Tree[loc].right=NULL;
+    return &Tree[loc++];
+ }
+
+ void postOrder(Node* root){
+    if(root->left!=NULL)
+        postOrder(root->left);
+    if(root->right!=NULL)
+        postOrder(root->right);
+    cout<<root->c;
+ }
+
+ Node* build(int b1, int e1, int b2, int e2){
+    Node *root = creat();
+    root->c = str1[b1];
+    int index =0;
+    for(int i=b2;i<=e2;i++)
+    if(str2[i]==str1[b1]){
+        index = i;
+        break;
+    }
+    if(index!=b2){
+        root->left=build(b1+1,b1+1+(index-1-b2),b2,index-1);
+    }
+    if(index!=e2){
+        root->right=build(e1-(e2-index-1),e1,index+1,e2);
+    }
+    return root;
+ }
+
+int main(){
+    while(cin>>str1>>str2){
+        int len1=str1.length();
+        int len2=str2.length();
+        Node * root = build(0, len1-1, 0, len2-1);
+        postOrder(root);
+        cout<<endl;
+    }
+    return 0;
+}
+
+```
+
