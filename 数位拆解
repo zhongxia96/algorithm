@@ -1,0 +1,35 @@
+数位拆解的本质就是不断取余，除进制，取余...
+
+下面给出一个案例：
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+int main()
+{
+    int a, b;
+    int buff1[12], buff2[12];
+    int index1 = 0;
+    cin>>a>>b;
+    while(a!=0){
+        buff1[index1++]=a%10;
+        a=a/10;
+    }
+    int index2 = 0;
+    while(b!=0){
+        buff2[index2++]=b%10;
+        b=b/10;
+    }
+    int ans = 0;
+    for(int i=0;i<index1;i++)
+        for(int j=0;j<index2;j++)
+            ans+=buff1[i]*buff2[j];
+    cout<<ans<<endl;
+    return 0;
+}
+```
