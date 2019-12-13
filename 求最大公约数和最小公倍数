@@ -1,0 +1,29 @@
+最大公约数：利用欧几里得算法，如果g是a,b的最大公约数，同样也是b,a%b的最大公约数
+
+下面的样例求a,b的最大公约数：
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+int gcd(int a, int b){
+    if(b==0)
+        return a;
+    return gcd(b, a%b);
+}
+
+int main()
+{
+    int a, b;
+    cin>>a>>b;
+    cout<<gcd(a,b)<<endl;
+    return 0;
+}
+```
+
+最小公倍数：两个数的乘积除以最大公约数就得到了最小公倍数。
+
