@@ -1,0 +1,89 @@
+判断两棵树是否相同，不能用同一种遍历方式去遍历两棵树，可以使用前序&中序遍历或者中序&后序遍历，然后比较结果。
+
+下面给出样例程序。
+需要注意的是，每次建完树之后分配的空间数归一（犯错）;create函数返回的是一个地址；
+
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+struct Node{
+    Node* left;
+    Node* right;
+    int value;
+}Tree[15];
+
+int loc = 0;
+Node* create(){
+    Tree[loc].left=Tree[loc].right=NULL;
+    return &Tree[loc++];
+}
+
+Node *Insert(int value, Node*root){
+    if(root==NULL){
+        root = create();
+        root->value = value;
+    }
+    else if(value<root->value)
+        root->left=Insert(value, root->left);
+    else if(value>root->value)
+        root->right=Insert(value, root->right);
+    return root;
+}
+
+void preOrder(Node *root, string &str){
+    str = str + to_string(root->value);
+    if(root->left!=NULL)
+        preOrder(root->left, str);
+    if(root->right!=NULL)
+        preOrder(root->right, str);
+    }
+
+void inOrder(Node *root, string &str){
+    if(root->left!=NULL)
+        inOrder(root->left, str);
+    str = str + to_string(root->value);
+    if(root->right!=NULL)
+        inOrder(root->right, str);
+}
+
+int main(){
+    int n;
+    while(cin>>n){
+        if(n==0)
+        break;
+        string input;
+        cin>>input;
+        Node *root=NULL;
+        for(int i=0;i<input.length();i++){
+            root = Insert(input[i], root);
+        }
+        string pre1 = "";
+        preOrder(root, pre1);
+        string in1 = "";
+        inOrder(root, in1);
+        while(n--){
+            loc =0;
+            cin>>input;
+            root = NULL;
+            for(int i=0;i<input.length();i++)
+                root = Insert(input[i], root);
+            string pre2 = "";
+            preOrder(root, pre2);
+            string in2 = "";
+            inOrder(root, in2);
+            if(pre1==pre2&&in1==in2)
+                cout<<"YES"<<endl;
+            else
+                cout<<"NO"<<endl;
+
+        }
+    }
+    return 0;
+}
+```
