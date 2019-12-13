@@ -1,0 +1,54 @@
+贪心算法涉及按照一定的规则贪心的选择最优解，最重要的一点就是决定贪心的策略。
+像下面这个案例来说，贪心的策略就是优先选择性价比最高的物品；
+需要注意的就是一些边界条件一定要注意检查!变量类型注意有些要定义成double!
+
+```
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include<stdio.h>
+using namespace std;
+
+struct cat{
+    double j;
+    double f;
+    double s;
+    bool operator < (const cat &b) const{
+    if(s>b.s)
+        return true;
+    else
+        return false;
+    }
+}buff[1005];
+
+int main()
+{
+    double m;
+    int n;
+    while(cin>>m>>n){
+            if(m==-1 && n==-1)
+            break;
+        for(int i=0;i<n;i++)
+        {
+            cin>>buff[i].j>>buff[i].f;
+            buff[i].s = buff[i].j / buff[i].f;
+        }
+        sort(buff, buff+n);
+        int index = 0;
+        double ans = 0;
+        while(index<n&&m>0){
+            if(buff[index].f<=m){
+                m-=buff[index].f;
+                ans += buff[index].j;
+            }
+            else{
+                ans += m*buff[index].j / buff[index].f;
+                m=0;
+            }
+    index ++;
+        }
+        printf("%.3lf\n", ans);
+    }
+    return 0;
+}
+```
