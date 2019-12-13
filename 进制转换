@@ -36,3 +36,51 @@ int main()
     return 0;
 }
 ```
+
+下面给定一个a进制的数n，转换成一个b进制的数；输入顺序是a,n,b
+
+思路：先转换成十进制的数，然后转换成b进制的数
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+
+int main()
+{
+    int a, b;
+    string n;
+    cin>>a>>n>>b;
+    int ans = 0;
+    for(int i=0;i<n.length();i++){
+        if(n[i]>='0' and n[i]<='9')
+        {
+            ans *= a;
+            ans += (n[i]-'0');
+        }
+        else if(n[i]>='a' and n[i]<='f'){
+            ans *= a;
+            ans += (n[i]-'a')+10;
+        }
+        else if(n[i]>='A' and n[i]<='F'){
+            ans *= a;
+            ans += (n[i]-'A')+10;
+        }
+    }
+    string res = "";
+    do{
+        int num = ans % b;
+        if(num<=9)
+            res = char(num+'0')+res;
+        else
+            res = char('A'+num-10)+res;
+        ans /=b;
+    }while(ans!=0);
+    cout<<res<<endl;
+    return 0;
+}
+```
