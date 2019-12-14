@@ -1,0 +1,52 @@
+给定n个城镇和他们之间已经存在的m条道路，问再修多少条道路才能把他们全部连通起来？
+
+分析：这个题目的本质就是给定n个城镇已经他们的部分连接信息，确定现在已经有多少个集合；集合数-1就是还要再修多少条道路；
+所以这道题本质上就是首先建立n个独立的集合，基于连接关系进行集合的合并，然后统计集合的数目，直接使用并查集来解决。
+
+下面给出代码：
+注意，在两个集合合并时一定要注意判断，当两个集合相互独立时才进行合并。
+
+```
+#include<iostream>
+#include<queue>
+#include<stdio.h>
+#include<string>
+#include<string.h>
+
+using namespace std;
+
+int Tree[1005];
+
+int findRoot(int x){
+    if(Tree[x]==-1)
+        return x;
+    int tmp = findRoot(Tree[x]);
+    Tree[x]= tmp;
+    return tmp;
+}
+
+int main(){
+    int n,m;
+    while(cin>>n){
+        if(n==0)
+            break;
+        for(int i=1;i<=n;i++)
+            Tree[i] = -1;
+        cin>>m;
+        while(m--){
+            int a,b;
+            cin>>a>>b;
+            a = findRoot(a);
+            b = findRoot(b);
+            if(a!=b)      //注意条件！一定要有！
+                Tree[a] = b;
+        }
+        int ans = 0;
+        for(int i=1;i<=n;i++)
+            if(Tree[i]==-1)
+            ans+=1;
+        cout<<ans-1<<endl;  //最后减一
+    }
+    return 0;
+}
+```
