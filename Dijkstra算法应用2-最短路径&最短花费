@@ -1,0 +1,84 @@
+题目描述：给你n个点，m条无向边，每条边都有长度d和花费p,给你起点s和终点t,要求输出起点到终点的最短距离及其花费，如果最短距离有多条路线，则输出
+花费最少的。
+
+分析：在该题中，不仅要求得到起点和终点的最短距离，还需要在有多条最短路径时选取花费最少的一条。要解决这一问题，只要更改Dijkstra算法中关于“更近”
+的评判标准即可：有两条路径，若他们距离不一样时，距离小的更近；若距离一样时，花费少的更近。
+
+```
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<math.h>
+using namespace std;
+
+struct Edge{
+    int nextNode;
+    int dis;
+    int p;
+    bool operator < (const Edge &b) const{
+    if(dis!=b.dis)
+        return dis < b.dis;
+    return p<b.p;
+    }
+};
+
+vector<Edge> edge[1005];
+
+int dis[1005];
+int cost[1005];
+bool mark[1005];
+
+int main(){
+    int n,m;
+    while(cin>>n>>m){
+        if(n==0&&m==0)
+            break;
+        for(int i=1;i<=n;i++)    //注意清空
+            edge[i].clear();
+        while(m--){
+            int a,b,d,p;
+            cin>>a>>b>>d>>p;
+            Edge tmp;
+            tmp.nextNode = a;
+            tmp.dis = d;
+            tmp.p=p;
+            edge[b].push_back(tmp);
+            tmp.nextNode = b;
+            edge[a].push_back(tmp);
+        }
+        for(int i=1;i<=n;i++){
+            dis[i]=-1;
+            cost[i]=0;
+            mark[i]=false;
+        }
+        int s,t;
+        cin>>s>>t;
+        dis[s] = 0;
+        cost[s] = 0;
+        mark[s]=true;
+        int newP = s;
+        for(int i=1;i<n;i++){
+            for(int j=0;j<edge[newP].size();j++){
+                if(dis[edge[newP][j].nextNode]==-1||dis[edge[newP][j].nextNode]>dis[newP]+edge[newP][j].dis||
+                     dis[edge[newP][j].nextNode]==dis[newP]+edge[newP][j].dis&&cost[edge[newP][j].nextNode]>cost[newP]+edge[newP][j].p){
+                        //注意判断条件
+                    dis[edge[newP][j].nextNode]=dis[newP]+edge[newP][j].dis;
+                    cost[edge[newP][j].nextNode]=cost[newP]+edge[newP][j].p;
+                }
+            }
+            int min_dis = -1;
+            for(int j=1;j<=n;j++){
+                if(dis[j]==-1||mark[j]==true)
+                    continue;
+                if(min_dis==-1||dis[j]<min_dis){
+                    newP=j;
+                    min_dis = dis[j];
+                }
+            }
+            mark[newP] =true;
+        }
+        cout<<dis[t]<<" "<<cost[t]<<endl;
+    }
+    return 0;
+}
+```
