@@ -1,0 +1,59 @@
+题目大意为在一个qq群里存在着许多师徒关系，如A是B的师傅，同时B是A的徒弟，一个师傅可能有很多徒弟，一个徒弟也可能有许多不同的师傅。输入给出该
+群里的所有师徒关系，问是否存在这样一种非法情况：以三个人为例，即A是B的师傅，B是A的师傅，C反过来又是A的师傅。
+
+解题思路：若我们将该群里的所有人都抽象成图上的节点，将所有的师徒关系都抽象成有向边，该实际问题就转换成：判断该图中是否存在一个环，即判断该图
+是否为有向无环图。
+
+```
+#include<iostream>
+#include<queue>
+#include<vector>
+
+using namespace std;
+
+vector<int> edge[105];
+
+int inDegree[105];
+queue<int> Q;
+
+int main(){
+    int n,m;
+    while(cin>>n>>m){
+        if(n==0&&m==0)
+            break;
+        for(int i=0;i<n;i++){
+            edge[i].clear();
+            inDegree[i]=0;
+        }
+        while(Q.empty()==false)
+            Q.pop();
+        while(m--){
+            int a,b;
+            cin>>a>>b;
+            edge[a].push_back(b);
+            inDegree[b]++;
+        }
+        for(int i=0;i<n;i++)
+            if(inDegree[i]==0)
+            Q.push(i);
+        int ans=0;
+        while(Q.empty()==false){
+            int num = Q.front();
+            Q.pop();
+            ans++;
+            for(int j=0;j<edge[num].size();j++){
+                inDegree[edge[num][j]]--;
+                if(inDegree[edge[num][j]]==0)
+                    Q.push(edge[num][j]);
+            }
+        }
+        if(ans==n)
+            cout<<"YES"<<endl;
+        else
+            cout<<"NO"<<endl;
+    }
+    return 0;
+}
+```
+
+该代码中所有节点至多进队一次，但在每个节点被取出时我们都要遍历以其为弧尾的边，故其复杂度为O(N+E)，其中N为结点的个数，E为边的个数。
