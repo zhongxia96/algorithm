@@ -1,0 +1,68 @@
+给定节点数目N，以及边的数目M，每条边的起始节点和长度，求源点1到目标节点N的最短路径长度。
+
+这里使用了邻接链表来表示图，同时设立了两个数组mark和dis来确定一个点到源点的最短路径是否已经被确定，dis表明目前的路径长度。
+
+```
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<math.h>
+using namespace std;
+
+struct Edge{
+    int nextNode;
+    int cost;
+};
+
+vector<Edge> buff[10005];
+
+bool mark[105];
+int dis[105];  //距离向量，当mark[i]为true时，表示已得的最短路径长度；否则，表示所有从节点1出发，经过已知的最短路径到达集合K中的某节点，
+                  再经过一条边到达节点i的路径中的最短距离
+
+int main(){
+    int n,m;
+    while(cin>>n>>m)
+    {
+        if(m==0&&n==0)
+            break;
+        for(int i=1;i<=n;i++){
+            mark[i] = false;  //确定节点i的最短路径是否已经被确定
+            dis[i] = -1;
+        }
+        for(int i=1;i<=n;i++)
+            buff[i].clear();    //每次求解时记得清空
+        while(m--){
+            int a,b,c;
+            cin>>a>>b>>c;
+            Edge tmp;
+            tmp.nextNode = b;
+            tmp.cost = c;
+            buff[a].push_back(tmp);
+            tmp.nextNode = a;
+            buff[b].push_back(tmp);
+        }
+        int newP = 1;
+        dis[1] = 0;
+        mark[1] = true;
+        for(int i=1;i<n;i++){  //每一次循环确定一个节点到源点的最短路径，循环n-1次
+            for(int j=0;j<buff[newP].size();j++){
+                if(dis[buff[newP][j].nextNode]==-1 || dis[buff[newP][j].nextNode] > dis[newP] + buff[newP][j].cost)
+                    dis[buff[newP][j].nextNode]=dis[newP] + buff[newP][j].cost;
+            }
+            int min_dis = -1;
+            for(int j=1;j<=n;j++){
+                if(mark[j]==true||dis[j]==-1)
+                    continue;
+                if(min_dis==-1||min_dis>dis[j]){
+                    min_dis = dis[j];
+                    newP=j;
+                }
+            }
+            mark[newP] = true;
+        }
+        cout<<dis[n]<<endl;
+    }
+    return 0;
+}
+```
