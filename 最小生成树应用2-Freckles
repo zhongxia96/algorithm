@@ -1,0 +1,65 @@
+题意为平面上有若干个点，需要用一些线段来将这些点连接起来使任意两个点能够通过一系列的线段相连，给出所有点的坐标，求一种连接方式使所有线段的长度
+和最小，求该长度和。
+
+解题思路：若将平面上的点抽象成图上的节点，将节点之间直接相邻的线段抽象成连接节点的边，且权值为其长度，那么类似于几何最优值的问题就被转化为图论
+上的最小生成树问题。但在开始求最小生成树前，必须先建立图，得出所有的边和相应的权值。
+
+```
+#include<iostream>
+#include<algorithm>
+#include<string>
+#include<math.h>
+#include<stdio.h>
+using namespace std;
+
+double x[105];
+double y[105];
+
+struct Edge{
+    int a;
+    int b;
+    double cost;
+    bool operator < (const Edge &b) const{
+        return cost < b.cost;
+    }
+}buff[5005];
+
+int Tree[105];
+
+int findRoot(int x){
+    if(Tree[x]==-1)
+        return x;
+    int tmp = findRoot(Tree[x]);
+    Tree[x] = tmp;
+    return tmp;
+}
+
+int main(){
+    int n;
+    cin>>n;
+    for(int i=0;i<n;i++)
+        cin>>x[i]>>y[i];
+    for(int i=0;i<n;i++)
+        Tree[i] = -1;
+    int m=0;
+    for(int i=0;i<n;i++)
+    for(int j=0;j<n;j++){
+        buff[m].a=i;
+        buff[m].b=j;
+        buff[m].cost=sqrt(pow((x[i]-x[j]),2)+pow((y[i]-y[j]),2));
+        m++;
+    }
+    sort(buff, buff+m);
+    double ans = 0;
+    for(int i=0;i<m;i++){
+        int a = findRoot(buff[i].a);
+        int b = findRoot(buff[i].b);
+        if(a!=b){
+            Tree[a] = b;
+            ans += buff[i].cost;
+        }
+    }
+    printf("%.2lf\n", ans);
+    return 0;
+}
+```
