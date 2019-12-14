@@ -1,0 +1,47 @@
+给定两个正整数n,m, n表示有几个路口，m表示有几条路，求从标号为1到标号为n的最短路径。
+
+思路：使用floyd算法，主要包括一个三重循环，每重循环的循环次数均是N，这样Floyd算法的时间复杂度就是O(N^3)，空间复杂度是O(N^2)，其中N为图中节点
+的个数。
+
+注意：对邻接矩阵的初始化，不同节点之间的路径长度初始化为无穷，相同节点的路径长度初始化为0.
+
+```
+#include<iostream>
+#include<algorithm>
+#include<string>
+#include<math.h>
+#include<stdio.h>
+using namespace std;
+
+int matrix[105][105];
+
+int main(){
+    int n,m;
+    while(cin>>n>>m){
+        if(n==0&&m==0)
+            break;
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++)
+                matrix[i][j]=-1;
+            matrix[i][i]=0;          //注意初始化
+        }
+            
+        while(m--){
+            int a,b,c;
+            cin>>a>>b>>c;
+            matrix[a][b]=c;
+            matrix[b][a]=c;
+        }
+        for(int k=1;k<=n;k++)
+        for(int i=1;i<=n;i++)
+        for(int j=1;j<=n;j++){
+            if(matrix[i][k]==-1||matrix[k][j]==-1)
+                continue;
+            if(matrix[i][j]==-1||matrix[i][k]+matrix[k][j]<matrix[i][j])   //注意判断条件
+                matrix[i][j] = matrix[i][k]+matrix[k][j];
+        }
+        cout<<matrix[1][n]<<endl;
+    }
+    return 0;
+}
+```
