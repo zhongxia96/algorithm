@@ -1,0 +1,61 @@
+题意大概是给定城市数目n,已经连接所有城市的道路长度；在给定道路中选取一些，使所有城市直接或者间接连通且使道路的总长度最短，该题就是典型的最小生成树问题。
+
+代码如下：
+```
+#include<iostream>
+#include<algorithm>
+#include<string>
+using namespace std;
+
+struct Edge{
+    int a;
+    int b;
+    int cost;
+    bool operator < (const Edge &b) const{
+        return cost < b.cost;
+    }
+}buff[5005];
+
+int Tree[105];
+
+int findRoot(int x){
+    if(Tree[x] == -1)
+        return x;
+    int tmp = findRoot(Tree[x]);
+    Tree[x] = tmp;
+    return tmp;
+}
+
+int main()
+{
+    int n;
+    while(cin>>n){
+        if(n==0)
+            break;
+        for(int i =1;i<=n;i++)
+            Tree[i] = -1;
+        int m = n*(n-1)/2;
+        for(int i=0;i<m;i++)
+        {
+            cin>>buff[i].a>>buff[i].b>>buff[i].cost;
+        }
+        sort(buff, buff+m);
+        int ans = 0;
+        for(int i=0;i<m;i++){
+            int a = findRoot(buff[i].a);
+            int b = findRoot(buff[i].b);
+            if(a!=b){
+                Tree[a] = b;
+                ans += buff[i].cost;
+            }
+        }
+        cout<<ans<<endl;
+
+    }
+    return 0;
+}
+```
+
+使用并查集处理节点的集合属性，初始时所有节点属于只包含其自身的孤立集合。按顺序遍历按照边权值递增排列的边时，若该边的两个顶点属于两个不同的集合，则合并这两个集合同时将该边的权值累加到答案中，直到遍历完所有的边。
+
+该例中不存在得不到最小生成树的情况，所以最后没有对所有节点是否属于同一个集合进行判断，若可能出现不存在最小生成树的情况，这步不能忽略。
