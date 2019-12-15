@@ -1,0 +1,73 @@
+题目大意：在给定的n*m图中，确定有几个@的块。块符合以下条件，其中的任意对@均互相直接或间接连通，两个@直接相邻或者对角相邻即为连通。
+
+题解：首先对图上所有位置均设置一个标记位，表示该位置是否已经被计算过，且该标记仅对地图上为@的点有效。这样按从左到右、从上往下的顺序遍历地图上所有位置，若
+遍历到@，且该点未被标记，则所有与其直接相邻、或者间接相邻的@点与其一起组成一个块，该块视为我们一个需要计算的块，将该块中所有的@位置标记为已计算。这样，
+当所有的位置都被遍历过后，即得到了所需的答案。
+
+```
+
+#include<iostream>
+
+#include<math.h>
+
+using namespace std;
+
+int m,n;
+
+char maze[105][105];
+
+bool mark[105][105];
+
+int dir[][2]={
+    0,1,
+    0,-1,
+    1,0,
+    -1,0,
+    1,1,
+    1,-1,
+    -1,-1,
+    -1,1
+};
+
+void DFS(int x,int y){
+    mark[x][y]=true;
+    for(int i=0;i<8;i++){
+        int nx = x+dir[i][0];
+        int ny = y+dir[i][1];
+        if(nx>=0&&nx<m&&ny>=0&&ny<n&&mark[nx][ny]==false&&maze[nx][ny]=='@')
+            DFS(nx,ny);
+    }
+}
+
+int main(){
+    while(cin>>m>>n){
+        if(m==0&&n==0)
+            break;
+        for(int i=0;i<m;i++)
+            for(int j=0;j<n;j++){
+                cin>>maze[i][j];
+                mark[i][j]=false;
+            }
+        int ans = 0;
+        for(int i=0;i<m;i++)
+            for(int j=0;j<n;j++){
+                if(maze[i][j]=='*')
+                    continue;
+                if(mark[i][j]==true)
+                    continue;
+                else{
+                    DFS(i,j);
+                    ans++;
+                    }
+            }
+        cout<<ans<<endl;
+    }
+    
+    return 0;
+}
+```
+
+总结：
+用BFS其实也可以完成此题。但是递归的优势就在于其精简的代码，与BFS动辄百行的代码量相比，递归精巧简练的代码值得在机试中使用。
+
+但是使用递归函数务必要注意递归的层数，一个程序可以使用的栈空间是有限的，当递归层次过深，或者每层递归所需的栈空间太大将会造成栈的溢出。
