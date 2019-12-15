@@ -1,0 +1,74 @@
+“回溯法枚举”
+
+题目：给定1到n数字，将这些数字依次填入环中，使得环中任意两个相邻的数字间的和为素数。对于给定的n,按字典序由小到大输出所有符合条件的解
+（第一个数字恒定为1）。
+
+题解：我们可以采用回溯法枚举每一个值。当第一个数位为1确定时，我们尝试放入第二个数，使其和1的和为素数，放入之后再尝试放入第三个数，使其和第二个数的和为
+素数，直到所有的数全部被放入环中，且最后一个数和1的和也是素数，那么这个方案即为答案，输出；
+若在尝试放数的过程中，发现当前位置无论放置任何之前未被使用的数均不满足条件，那么回溯改变上一个数，直到产生所需要的答案，或者确实不再存在更多的解。
+
+```
+
+#include <iostream>
+#include<queue>
+
+using namespace std;
+
+bool mark[18];
+int ans[18];
+int n;
+
+int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41};
+bool isPrime(int n){
+    for(int i=0;i<13;i++)
+        if(prime[i]==n)
+            return true;
+    return false;
+}
+
+void check(){
+    if(isPrime(ans[n]+ans[1]) == false)
+        return;
+    for(int i=1;i<=n;i++)
+        cout<<ans[i]<<" ";
+    cout<<endl;
+}
+
+void DFS(int num){
+    if(num>1)
+        if(isPrime(ans[num]+ans[num-1]) == false)
+            return;
+    if(num==n){
+        check();
+        return;
+    }
+    for(int i=2;i<=n;i++){
+        if(mark[i])
+            continue;
+        mark[i]=true;
+        ans[num+1]=i;
+        DFS(num+1);
+        mark[i]=false;
+    }
+    
+}
+
+
+int main(){
+    
+    while(cin>>n){
+        for(int i=1;i<=n;i++)
+            mark[i]=false;
+        mark[1]=true;
+        ans[1]=1;
+        DFS(1);
+    }
+    return 0;
+}
+```
+
+在尝试放入第num+1个数字时，我们依次放入所有在之前位置上未被使用的数字，假设当前x未被使用，将x放入第num+1个位置，标记x为已用，此时环中前num+1个数字
+全部被确定，依次保存在ans[1]到ans[num+1]中，再进行下一位置的枚举，即递归调用DFS。当调用返回时，意味着当前num+1个数字确定为ans[1]到ans[num+1]中
+的值时对应的所有可行的答案已经全部处理完毕（可能一个解也不存在），此时我们需要改变ans[num+1]的值，从而进行新答案的搜索。
+所以此时ans[num+1]的值将不再为已经被枚举过的x,而是一个异于x,但又未在之前使用过的新数字。那么对于后序数字而言，x是未被使用的，是可以被放入后序任意一个
+位置的，所以重新标记x为未使用，供后序数位选择。这就是为什么先是标记x为已使用，而后又解除该标记的原因。
