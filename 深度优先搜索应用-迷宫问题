@@ -1,0 +1,91 @@
+题意：有一个N*M的迷宫，包括起点S，终点D，墙X和地面，0秒时主人公从S出发，每秒能走到四个与其相邻的位置中的一个，且每个位置被行走之后都不能再次走入，问
+是否存在这样一条路径使主人公在T秒时刚好走到D。
+
+题解：这个问题中，题目不再要求我们求解最优解，而是转而需要我们判定是否存在一个符合条件的路径，所以使用深度优先搜索来达到这个目的。
+
+确定状态三元组（x,y,t),(x,y)为当前点坐标，t为从起点走到该点所需要的时间。我们需要的目标状态为（dx,dy,T),其中dx,dy为D所在点的坐标，T为所需的时间，
+初始状态为（sx,sy,0)，其中（sx,sy)为S所在点的坐标。
+
+这时我们注意到，主人公每走一步，其所在位置坐标中，只有一个坐标分量发生加一或者减一的改变，那么两个坐标分量和的奇偶性将会发生变化，这样，当主人公走过奇数
+步时，其所在位置坐标和的奇偶性必与原始位置不同；而走过偶数步时，其坐标和的奇偶性与起点保持不变。若起点的坐标和的奇偶性和终点的坐标和不同，但是需要经过
+偶数秒使其恰好到，这显然是不可能的，于是我们直接判定这种情况下，整颗解答树中都不存在我们需要的状态，跳过搜索部分，直接输出No.
+
+```
+#include<iostream>
+
+#include<math.h>
+
+using namespace std;
+
+int n,m,t;
+int start_x,start_y,end_x,end_y;
+char maze[10][10];
+bool mark[10][10];
+
+int dir[][2]={
+    0,1,
+    0,-1,
+    1,0,
+    -1,0
+};
+
+bool DFS(int x, int y, int time){
+    if(x==end_x&&y==end_y&&time==t)
+        return true;
+    for(int i=0;i<4;i++){
+        int nx = x+dir[i][0];
+        int ny = y+dir[i][1];
+        if(nx<0||nx>=n||ny<0||ny>=m||mark[nx][ny]==true||maze[nx][ny]=='X')
+            continue;
+        mark[nx][ny]=true;
+        bool ans = DFS(nx,ny,time+1);
+        if(ans)
+            return true;
+        mark[nx][ny]=false;
+    }
+    return false;
+}
+
+int main(){
+    while(cin>>n>>m>>t){
+        if(n==0&&m==0&&t==0)
+            break;
+        for(int i=0;i<n;i++)
+            for(int j=0;j<m;j++){
+                cin>>maze[i][j];
+                mark[i][j]=false;
+            }
+        for(int i=0;i<n;i++)
+            for(int j=0;j<m;j++){
+                if(maze[i][j]=='S'){
+                    start_x=i;
+                    start_y=j;
+                }
+                else if(maze[i][j]=='D'){
+                    end_x=i;
+                    end_y=j;
+                }
+            }
+        if((start_x+start_y)%2!=(end_x+end_y+t)%2){
+            cout<<"NO"<<endl;
+            continue;
+        }
+        mark[start_x][start_y]=true;
+        bool ans = DFS(start_x, start_y,0);
+        if(ans)
+            cout<<"YES"<<endl;
+        else
+            cout<<"NO"<<endl;
+    }
+    
+    return 0;
+}
+```
+
+如上述代码所示，我们使用递归函数完成深度优先搜索。深度优先搜素的各要素如下：
+搜索空间：广度优先搜索相同，依旧是所有的状态。
+搜索目的：查找一个可以表示原问题解的状态。
+搜索方法：在解答树上进行先序遍历。
+
+其查找空间和查找目的均与广度优先搜索保持一致，与广度优先搜索有较大不同的是它的查找方式。深度优先搜索对状态的查找采用了立即扩展新得到状态的方法，我们常
+使用递归的方式来完成这一功能。正是由于采用这样的扩展方法，由它搜索得来的解不再具有最优解的特性，所以我们常用它来判断是否存在的存在性判定。
