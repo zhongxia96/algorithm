@@ -16,3 +16,98 @@
 查找目标：也被称为搜索目标，即在所有的状态中搜索这样的一个四元组（x,y,z,t),其中x,y,z分别等于A-1，B-1，C-1，t为达到这个状态所需要的最少时间。
 查找方法：通过状态的扩展来遍历查找所有的状态。
 
+```
+
+#include <iostream>
+#include<queue>
+
+using namespace std;
+
+struct State{
+    int x,y,z;
+    int t;
+};
+int maze[55][55][55];
+bool mark[55][55][55];
+queue<State> Q;
+int a,b,c,t;
+
+int dir[][3]={
+    1,0,0,
+    -1,0,0,
+    0,1,0,
+    0,-1,0,
+    0,0,1,
+    0,0,-1};
+
+bool judge(int x,int y, int z){
+    if(x>=a||x<0||y>=b||y<0||z>=c||z<0)
+        return false;
+    return true;
+}
+
+int BFS(){
+    while(Q.empty()==false){
+        State state = Q.front();
+        Q.pop();
+        int nx = state.x;
+        int ny = state.y;
+        int nz = state.z;
+        int nt = state.t;
+        for(int i=0;i<6;i++)
+        {
+            int x = nx+dir[i][0];
+            int y = ny + dir[i][1];
+            int z = nz + dir[i][2];
+            if(judge(x,y,z)==false||mark[x][y][z]==true||maze[x][y][z]==1)
+                continue;
+            if(x==a-1&&y==b-1&&z==c-1)
+                return nt+1;
+            State tmp;
+            tmp.x = x;
+            tmp.y = y;
+            tmp.z = z;
+            tmp.t = nt+1;
+            Q.push(tmp);
+            
+        }
+    }
+    return -1;
+}
+int main(){
+    int K;
+    cin>>K;
+    while(K--){
+        cin>>a>>b>>c>>t;
+        for(int i=0;i<a;i++)
+            for(int j=0;j<b;j++)
+                for(int k=0;k<c;k++)
+                {
+                    cin>>maze[i][j][k];
+                    mark[i][j][k]=false;
+                }
+        
+        State tmp;
+        tmp.x=tmp.y=tmp.z=0;
+        tmp.t=0;
+        mark[0][0][0]=true;
+        while(Q.empty()!=true) Q.pop();
+        Q.push(tmp);
+        int ans = BFS();
+        if(ans<=t)
+            cout<<ans<<endl;
+        else
+            cout<<-1<<endl;
+    }
+    return 0;
+}
+```
+
+在上述实现中，我们需要一个结构体来保存每一个状态。
+其次，为了实现各个状态按照其被查找到的顺序依次转移扩展，我们需要使用一个队列。即将每次扩展得到的新状态放入队列中，待排在其之前的状态都被扩展完成后，
+该状态才能得到扩展。
+最后，为了防止对无效状态的搜索，我们需要一个标记数组mark[x][y][z],当已经得到过包含坐标（x,y,z)的状态后，即把mark[x][y][z]置为true，当下次再由某
+状态扩展出包含该坐标的状态时，则直接丢弃，不对它做任何处理。
+
+总结：我们通过状态之间的相互扩展完成在所有状态集合中的搜索，并查找需要的状态。利用这种手段，我们将原本对路径的搜索转化到了对状态的搜索上来。广度优先搜索
+即对状态间的相互转移构成的解答树构成的按层次遍历。
