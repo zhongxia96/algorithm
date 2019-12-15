@@ -5,3 +5,211 @@
 状态进行搜索。
 使用四元组（x,y,z,t)来表示一个状态，其中x,y,z分别表示三个瓶子中的可乐体积，t表示从初始状态到该状态所需的杯子间互相倾倒的次数。状态间的互相扩展，就是
 任意四元组经过瓶子间的互相倾倒而得到若干组新的四元组的过程。这样，当平分状态第一次搜索出来以后，其状态中表示的杯子倾倒次数即是所求。
+
+```
+#include <iostream>
+#include<queue>
+
+using namespace std;
+
+struct State{
+    int a,b,c;
+    int t;
+};
+int s,n,m;
+
+bool mark[105][105][105];
+
+queue<State> Q;
+
+void A2B(int &a, int va, int &b, int vb){
+    if(a>vb-b){
+        a -=vb-b;
+        b=vb;
+    }
+    else{
+        b+=a;
+        a =0;
+    }
+}
+
+bool judge(int a, int b, int c){
+    if(a==s/2 && b==s/2 || a==s/2 && c==s/2 || b==s/2 && c==s/2)
+        return true;
+    return false;
+}
+int BFS(){
+    while(Q.empty()==false){
+        State now = Q.front();
+        Q.pop();
+        // na 2 nb
+        int na = now.a;
+        int nb = now.b;
+        int nc = now.c;
+        A2B(na, s, nb, n);
+        if(mark[na][nb][nc]==false)
+        {
+            State tmp;
+            tmp.a = na;
+            tmp.b = nb;
+            tmp.c = nc;
+            tmp.t = now.t+1;
+            if(judge(tmp.a, tmp.b, tmp.c)==true)
+                return tmp.t;
+            else
+                Q.push(tmp);
+            mark[na][nb][nc] = true;
+        }
+        
+        //na 2 nc
+        na = now.a;
+        nb = now.b;
+        nc = now.c;
+        A2B(na, s, nc, m);
+        if(mark[na][nb][nc]==false)
+            {
+                State tmp;
+                tmp.a = na;
+                tmp.b = nb;
+                tmp.c = nc;
+                tmp.t = now.t+1;
+                if(judge(tmp.a, tmp.b, tmp.c)==true)
+                    return tmp.t;
+                else
+                    Q.push(tmp);
+                mark[na][nb][nc] = true;
+            }
+        //nb 2 na
+        na = now.a;
+        nb = now.b;
+        nc = now.c;
+        A2B(nb, n, na, s);
+        if(mark[na][nb][nc]==false)
+            {
+                State tmp;
+                tmp.a = na;
+                tmp.b = nb;
+                tmp.c = nc;
+                tmp.t = now.t+1;
+                if(judge(tmp.a, tmp.b, tmp.c)==true)
+                    return tmp.t;
+                else
+                    Q.push(tmp);
+                mark[na][nb][nc] = true;
+            }
+        //nb 2 nc
+        na = now.a;
+        nb = now.b;
+        nc = now.c;
+        A2B(nb, n, nc, m);
+        if(mark[na][nb][nc]==false)
+            {
+                State tmp;
+                tmp.a = na;
+                tmp.b = nb;
+                tmp.c = nc;
+                tmp.t = now.t+1;
+                if(judge(tmp.a, tmp.b, tmp.c)==true)
+                    return tmp.t;
+                else
+                    Q.push(tmp);
+                mark[na][nb][nc] = true;
+            }
+        //nc 2 na
+        na = now.a;
+        nb = now.b;
+        nc = now.c;
+        A2B(nc, m, na, s);
+        if(mark[na][nb][nc]==false)
+            {
+                State tmp;
+                tmp.a = na;
+                tmp.b = nb;
+                tmp.c = nc;
+                tmp.t = now.t+1;
+                if(judge(tmp.a, tmp.b, tmp.c)==true)
+                    return tmp.t;
+                else
+                    Q.push(tmp);
+                mark[na][nb][nc] = true;
+            }
+        //nc 2 nb
+        na = now.a;
+        nb = now.b;
+        nc = now.c;
+        A2B(nc, m, nb, n);
+        if(mark[na][nb][nc]==false)
+            {
+                State tmp;
+                tmp.a = na;
+                tmp.b = nb;
+                tmp.c = nc;
+                tmp.t = now.t+1;
+                if(judge(tmp.a, tmp.b, tmp.c)==true)
+                    return tmp.t;
+                else
+                    Q.push(tmp);
+                mark[na][nb][nc] = true;
+            }
+    }
+    return -1;
+}
+
+int main(){
+    while(cin>>s>>n>>m){
+        if(s==0&&n==0&&m==0)
+            break;
+        while(Q.empty()==false) Q.pop();
+        State tmp;
+        tmp.a = s;
+        tmp.b = 0;
+        tmp.c = 0;
+        tmp.t=0;
+        for(int i=0;i<=s;i++)
+            for(int j=0;j<=n;j++)
+                for(int k=0;k<=m;k++)
+                    mark[i][j][k]=false;
+        mark[s][0][0]=true;
+        Q.push(tmp);
+        if(s%2!=0){
+            cout<<"NO"<<endl;
+            continue;
+        }
+        int ans = BFS();
+        if(ans==-1)
+            cout<<"NO"<<endl;
+        else
+            cout<<ans<<endl;
+    }
+    return 0;
+}
+```
+
+总结：
+与动态规划问题一样，广度优先搜索的关键也是确定状态，只要确定了需要搜索的状态，才能更好的进行搜素活动。
+
+同时，广度优先搜索的复杂度也与状态的数量有关，由于舍弃了很多无效的状态，那么时间复杂度与有效状态正相关。如本题中，所有可能出现的状态为100*100*100个，
+即每个体积组对应一个有效状态，所以其时间复杂度也大致是这个数量级，在进行广搜之前要考虑时间复杂度是否符合要求。
+
+最后总结广度优先搜索的几个关键字：
+（1）状态。我们确定要求解问题的状态。通过状态的转移扩展，查找遍历所有的状态，从而从中寻找我们需要的答案。
+（2）状态扩展方式。在广度优先搜索中，我们总是尽可能的扩展状态，并将先扩展得出的状态进行下一次的扩展。在解答树上变现成按层次遍历所有的状态。
+（3）有效状态。对有些状态，我们那并不对其进行再一次扩展，而是直接舍弃它。因为根据问题分析可知，目标状态不会由这些状态经过若干次扩展得到，即目标状态不可能
+存在在其解答树的子树上，所以直接舍弃。
+（4）队列。为了实现先得出的状态先进行扩展，我们使用队列，将得到的状态依次放入队尾，每次取队头元素进行扩展。
+（5）标记。为了判断哪些状态是有效的，哪些是无效的，我们往往使用标记。
+（6）有效状态数。问题中的有效状态数与算法的复杂度同数量级，所以在进行搜索之前必须估算其是否在我们可以接受的范围之内。
+（7）最优。广度优先搜索常被用来解决最优值问题，因为其搜索到的状态总是按照某个关键字递增（如前例中的时间和倒杯子次数），这个特性非常适合求解最优值问题。
+所以一旦问题中出现最少，最短，最优等关键字，我们就要考虑是否是广度优先搜索。
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
