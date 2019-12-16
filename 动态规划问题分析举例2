@@ -1,0 +1,68 @@
+Greedy tino
+有一堆柑橘，重量为0到2000，总重量不大于2000.要求我们从中取出两堆放在扁担的两头且两头的重量相等，问符合条件的每堆重量最大为多少。没有符合条件的分堆方式
+则输出-1.
+
+题解：
+首先，我们只考虑柑橘重量为非0的情况。
+因为本题要求解的是重量相等的两堆柑橘中每堆的最大重量，并且在堆放过程中，由于新的柑橘被加到第一堆或者第二堆，两堆之间的重量差会动态发生改变，所以我们设
+状态dp[i][j]表示前i个柑橘被选择后（每个柑橘可能放到第一堆或者第二堆）后，第一堆比第二堆中j时（当j为负时表示第二堆比第一堆重），两堆的最大总重量和。
+
+初始时，dp[0][0]为0，即不往两堆中加任何柑橘时，两堆最大总重量为0；dp[0][j]（j不等于0）为负无穷，即其他状态都不存在。
+根据每一个新加入的柑橘被加入到第一堆或者第二堆或者不加到任何一堆，设当前加入柑橘重量为list[i]，这将造成第一堆与第二堆的重量差增大list[i]或者减少
+list[i]或者不变，我们在他们之中取最大值，其状态转移为：
+dp[i][j]=max{dp[i-1][j-list[i]]+list[i], dp[i-1][j+list[i]]+list[i], dp[i-1][j]};
+当根据该状态转移方程求出所有的状态后，状态dp[n][0]/2即是所求。
+
+最后分析其复杂度。由于柑橘总重量不大于2000，所以总的状态数量为柑橘总数n*2*2000,状态转移为O（1）复杂度，所以综合时间复杂度为O（4000*m),在我们可以接受
+的范围内。
+
+```
+#include <iostream>
+#include <algorithm>
+#include <math.h>
+
+using namespace std;
+
+int weight[105];
+
+int dp[105][4005];
+
+int main(){
+    int t;
+    int n;
+    cin>>t;
+    while(t--){
+        cin>>n;
+        for(int i=1;i<=n;i++)
+            cin>>weight[i];
+        for(int i=0;i<=4000;i++)
+            dp[0][i]=-1;
+        dp[0][2000]=0;   //注意初始化2000的位置，一开始错写成了偏移之前的0
+        for(int i=1;i<=n;i++)
+            for(int j=0;j<=2000+2000;j++){
+                if(j+weight[i]<=4000&&j-weight[i]>=0&&dp[i-1][j+weight[i]]!=-1&&dp[i-1][j-weight[i]]!=-1)
+                {
+                    int a = dp[i-1][j];
+                    int b = dp[i-1][j+weight[i]];
+                    int c = dp[i-1][j-weight[i]];
+                    dp[i][j]=max(max(b+weight[i], c+weight[i]), a);
+                }
+                else if(j+weight[i]<=4000&&dp[i-1][j+weight[i]]!=-1){
+                    int a = dp[i-1][j];
+                    int b = dp[i-1][j+weight[i]];
+                    dp[i][j]=max(b+weight[i],  a);
+                }
+                else if(j-weight[i]>=0&&dp[i-1][j-weight[i]]!=-1){
+                    int a = dp[i-1][j];
+                    int b = dp[i-1][j-weight[i]];
+                    dp[i][j]=max(b+weight[i],  a);
+                }
+                else
+                    dp[i][j] = dp[i-1][j];
+                
+            }
+        cout<<dp[n][2000]/2<<endl; //注意除2
+    }
+    return 0;
+}
+```
